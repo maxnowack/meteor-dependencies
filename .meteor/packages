@@ -5,5 +5,10 @@
 # but you can also edit it by hand.
 
 meteor-platform
-autopublish
-insecure
+coffeescript
+percolate:synced-cron
+maximum:server-transform
+maximum:document-classes
+iron:router
+package-version-parser
+http
