@@ -50,22 +50,8 @@ class @Pkg extends DocumentClass.Base
       syncUpdate = Meteor.wrapAsync @updateAtmo, this
       syncUpdate()
     if constraint?
-      versionConstraint = PackageVersion.parseVersionConstraint(constraint)
-      alternatives = versionConstraint.alternatives
-      versions = alternatives.map (version) -> version.versionString
-      status = versions.map (version) =>
-        myVersion = PackageVersion.parse @latestVersion.version
-        version = PackageVersion.parse version
-        if myVersion.major isnt version.major
-          return UpdateStatus.outdatedMajor
-        else if myVersion.minor isnt version.minor
-          return UpdateStatus.outdatedMinor
-        else if myVersion.patch isnt version.patch
-          return UpdateStatus.outdatedPatch
-        else
-          return UpdateStatus.upToDate
-      highestStatus = status.sort(sortNumber).reverse()[0]
-      return highestStatus unless highestStatus is UpdateStatus.upToDate
+      diff = @diffConstraint constraint
+      return diff unless diff is UpdateStatus.upToDate
 
     currentVersion = @currentVersion()
     checked.push @name
@@ -76,6 +62,29 @@ class @Pkg extends DocumentClass.Base
       pkg = Pkg.getByName name
       status.push pkg.getUpdateStatus dep.constraint, checked
     return status.sort(sortNumber)[0] or UpdateStatus.upToDate
+
+  diffConstraint: (constraint) ->
+    versionConstraint = PackageVersion.parseVersionConstraint(constraint)
+    alternatives = versionConstraint.alternatives
+    versions = alternatives.map (version) -> version.versionString
+    status = versions.map (version) =>
+      myVersion = PackageVersion.parse @latestVersion.version
+      version = PackageVersion.parse version
+      if myVersion.major isnt version.major
+        return UpdateStatus.outdatedMajor
+      else if myVersion.minor isnt version.minor
+        return UpdateStatus.outdatedMinor
+      else if myVersion.patch isnt version.patch
+        return UpdateStatus.outdatedPatch
+      else
+        return UpdateStatus.upToDate
+    highestStatus = status.sort(sortNumber).reverse()[0]
+    return highestStatus
+
+  getDepStatus: (name) ->
+    constraint = @getDepVersion(name).constraint
+    dep = Pkg.getByName name
+    return dep.diffConstraint constraint
 
   status: ->
     return {text: 'package not found', color: 'red'} unless @lastUpdated?
@@ -100,4 +109,4 @@ class @Pkg extends DocumentClass.Base
     Packages.find(name: $in: names)
 
   getDepVersion: (name) ->
-    @currentVersion()?.metadata?.dependencies[name].constraint
+    @currentVersion()?.metadata?.dependencies[name]
