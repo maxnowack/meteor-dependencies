@@ -14,3 +14,4 @@ package-version-parser
 http
 semantic:ui-css
 stylus
+momentjs:moment

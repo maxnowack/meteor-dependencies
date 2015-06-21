@@ -1,5 +1,12 @@
 <template name="Package">
-  <h1 class="ui header">{{package.name}} <img src="/{{package.name}}.svg" /></h1>
+  <h1 class="ui header">{{package.name}} ({{package.latestVersion.version}})</h1>
+  <div class="package-data">
+    <img src="/{{package.name}}.svg" />
+    <p>
+      Last update: {{formatLocalized package.latestVersion.published}}
+    </p>
+  </div>
+
   <section class="package">
     <h2 class="ui header">Dependencies</h2>
     <table class="ui table">
@@ -17,7 +24,7 @@
             <td><a href="{{pathFor 'package' pkgname=name}}">{{name}}</a> <img src="/{{name}}.svg" /></td>
             <td>{{package.getDepVersion name}}</td>
             <td>{{latestVersion.version}}</td>
-            <td>{{lastUpdated}}</td>
+            <td>{{formatLocalized latestVersion.published}}</td>
           </tr>
         {{/each}}
       </tbody>
