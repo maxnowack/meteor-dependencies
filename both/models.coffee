@@ -19,6 +19,9 @@ class @Pkg extends DocumentClass.Base
       return syncUpdate()
     return pkg
 
+  @filterDeps: (name) ->
+    name.indexOf(':') > -1
+
   updateAtmo: (options = {}) ->
     callback = options if typeof options is 'function'
     connection = options.connection or DDP.connect('https://atmospherejs.com')
@@ -67,7 +70,7 @@ class @Pkg extends DocumentClass.Base
     status = []
     for name, dep of currentVersion.metadata.dependencies
       continue if name in checked
-      continue if name.indexOf(':') is -1
+      continue unless Pkg.filterDeps(name)
       pkg = Pkg.getByName name
       status.push pkg.updateStatus dep.constraint, checked
     return status.sort()[0] or UpdateStatus.upToDate
@@ -91,7 +94,7 @@ class @Pkg extends DocumentClass.Base
   dependencies: ->
     currentVersion = @currentVersion()
     names = (name for name of currentVersion?.metadata?.dependencies)
-    names = _.filter names, (name) -> name.indexOf(':') > -1
+    names = _.filter names, Pkg.filterDeps
     Packages.find(name: $in: names)
 
   getDepVersion: (name) ->
