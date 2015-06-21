@@ -43,7 +43,7 @@ class @Pkg extends DocumentClass.Base
       packageName: @name
       version: @latestVersion?.version
 
-  updateStatus: (constraint, checked = []) ->
+  getUpdateStatus: (constraint, checked = []) ->
     unless @latestVersion?
       syncUpdate = Meteor.wrapAsync @updateAtmo, this
       syncUpdate()
@@ -72,12 +72,12 @@ class @Pkg extends DocumentClass.Base
       continue if name in checked
       continue unless Pkg.filterDeps(name)
       pkg = Pkg.getByName name
-      status.push pkg.updateStatus dep.constraint, checked
+      status.push pkg.getUpdateStatus dep.constraint, checked
     return status.sort()[0] or UpdateStatus.upToDate
 
   status: ->
     return {text: 'package not found', color: 'red'} unless @lastUpdated?
-    updateStatus = @updateStatus()
+    updateStatus = @getUpdateStatus()
     if updateStatus is UpdateStatus.outdatedMajor
       text: 'outdated'
       color: 'orange'
