@@ -1,6 +1,6 @@
 UpdateStatus =
   upToDate: 100
-  outdatedBuild: 20
+  outdatedPatch: 20
   outdatedMinor: 10
   outdatedMajor: 0
 
@@ -58,8 +58,8 @@ class @Pkg extends DocumentClass.Base
           return UpdateStatus.outdatedMajor
         else if myVersion.minor isnt version.minor
           return UpdateStatus.outdatedMinor
-        else if myVersion.build isnt version.build
-          return UpdateStatus.outdatedBuild
+        else if myVersion.patch isnt version.patch
+          return UpdateStatus.outdatedPatch
         else
           return UpdateStatus.upToDate
       highestStatus = status.sort()[0]
@@ -84,7 +84,7 @@ class @Pkg extends DocumentClass.Base
     else if updateStatus is UpdateStatus.outdatedMinor
       text: 'up to date'
       color: 'yellow'
-    else if updateStatus is UpdateStatus.outdatedBuild
+    else if updateStatus is UpdateStatus.outdatedPatch
       text: 'up to date'
       color: 'yellowgreen'
     else if updateStatus is UpdateStatus.upToDate
