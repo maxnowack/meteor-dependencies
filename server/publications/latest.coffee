@@ -15,7 +15,9 @@ Meteor.publish 'latest', (search) ->
   check search, Match.OneOf null, undefined, String
   query = latestVersion: $exists: true
   if search? and search isnt ''
-    searchPackages search
+    Meteor.setTimeout ->
+      searchPackages search
+    , 0
     query = _.extend query, name:
       $regex: ".*#{search}.*"
       $options: 'i'
