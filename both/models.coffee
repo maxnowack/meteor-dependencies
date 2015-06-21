@@ -68,7 +68,7 @@ class @Pkg extends DocumentClass.Base
     currentVersion = @currentVersion()
     checked.push @name
     status = []
-    for name, dep of currentVersion.metadata.dependencies
+    for name, dep of currentVersion?.metadata?.dependencies
       continue if name in checked
       continue unless Pkg.filterDeps(name)
       pkg = Pkg.getByName name
