@@ -1,0 +1,26 @@
+<template name="Package">
+  <h1 class="ui header">{{package.name}} <img src="/{{package.name}}.svg" /></h1>
+  <section class="package">
+    <h2 class="ui header">Dependencies</h2>
+    <table class="ui table">
+      <thead>
+        <tr>
+          <th>Package</th>
+          <th>Required version</th>
+          <th>Latest version</th>
+          <th>Last update</th>
+        </tr>
+      </thead>
+      <tbody>
+        {{#each package.dependencies}}
+          <tr>
+            <td><a href="{{pathFor 'package' pkgname=name}}">{{name}}</a> <img src="/{{name}}.svg" /></td>
+            <td>{{package.getDepVersion name}}</td>
+            <td>{{latestVersion.version}}</td>
+            <td>{{lastUpdated}}</td>
+          </tr>
+        {{/each}}
+      </tbody>
+    </table>
+  </section>
+</template>

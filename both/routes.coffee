@@ -1,3 +1,8 @@
+Router.configure
+  layoutTemplate: 'MasterLayout'
+
+Router.route '/:pkgname', name: 'package'
+
 getSvg = (status) ->
   HTTP.get "https://img.shields.io/badge/dependencies-#{encodeURIComponent status.text}-#{status.color}.svg"
 

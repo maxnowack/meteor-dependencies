@@ -12,3 +12,5 @@ maximum:document-classes
 iron:router
 package-version-parser
 http
+semantic:ui-css
+stylus
