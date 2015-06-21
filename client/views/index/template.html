@@ -22,7 +22,11 @@
         {{#each latest}}
           <tr>
             <td><a href="{{pathFor 'package' pkgname=name}}">{{name}}</a> <img src="/{{name}}.svg" /></td>
-            <td>{{latestVersion.version}}</td>
+            <td>
+              <div class="ui label">
+                {{latestVersion.version}}
+              </div>
+            </td>
             <td>{{formatLocalized latestVersion.published}}</td>
           </tr>
         {{/each}}

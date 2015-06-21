@@ -94,10 +94,10 @@ class @Pkg extends DocumentClass.Base
       color: 'orange'
     else if updateStatus is UpdateStatus.outdatedMinor
       text: 'up to date'
-      color: 'yellow'
+      color: 'yellowgreen'
     else if updateStatus is UpdateStatus.outdatedPatch
       text: 'up to date'
-      color: 'yellowgreen'
+      color: 'green'
     else if updateStatus is UpdateStatus.upToDate
       text: 'up to date'
       color: 'brightgreen'
