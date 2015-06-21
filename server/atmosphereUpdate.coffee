@@ -20,17 +20,18 @@ atmosphereUpdate = ->
 
   cnx.disconnect()
   console.log 'ATMO: Updated'
-  algoliaUpdate false
   atmosphereUpdateInProgress = false
 
 Meteor.methods atmosphereUpdate: ->
   atmosphereUpdate()
 
-SyncedCron.add
-  name: 'ATMO: Update'
-  schedule: (parser) ->
-    parser.text 'every 1 hours'
-  job: ->
-    before = moment()
-    atmosphereUpdate()
-    'ATMO: Took' + moment().diff(before) / 1000 + ' seconds'
+Meteor.startup ->
+  atmosphereUpdate()
+  SyncedCron.add
+    name: 'ATMO: Update'
+    schedule: (parser) ->
+      parser.text 'every 1 hour'
+    job: ->
+      before = moment()
+      atmosphereUpdate()
+      'ATMO: Took' + moment().diff(before) / 1000 + ' seconds'
