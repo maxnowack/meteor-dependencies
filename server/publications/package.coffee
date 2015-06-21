@@ -5,8 +5,8 @@ Meteor.publish 'package', (name) ->
   pkg = Pkg.getByName name
   currentVersion = pkg.currentVersion()
 
-  names = (packageName for packageName of currentVersion.metadata.dependencies)
-  names = _.without names, 'meteor'
+  names = (packageName for packageName of currentVersion?.metadata?.dependencies)
+  names = _.filter names, (packageName) -> packageName.indexOf(':') > -1
   names.push name
 
   [
