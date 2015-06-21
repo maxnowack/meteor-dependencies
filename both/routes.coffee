@@ -1,6 +1,7 @@
 Router.configure
   layoutTemplate: 'MasterLayout'
 
+Router.route '/', name: 'index'
 Router.route '/:pkgname', name: 'package'
 
 getSvg = (status) ->

@@ -1,0 +1,23 @@
+<template name="Index">
+  <h1 class="ui header">Latest packages</h1>
+  <section class="latest">
+    <table class="ui table">
+      <thead>
+        <tr>
+          <th>Package</th>
+          <th>Version</th>
+          <th>Update</th>
+        </tr>
+      </thead>
+      <tbody>
+        {{#each latest}}
+          <tr>
+            <td><a href="{{pathFor 'package' pkgname=name}}">{{name}}</a> <img src="/{{name}}.svg" /></td>
+            <td>{{latestVersion.version}}</td>
+            <td>{{formatLocalized latestVersion.published}}</td>
+          </tr>
+        {{/each}}
+      </tbody>
+    </table>
+  </section>
+</template>
