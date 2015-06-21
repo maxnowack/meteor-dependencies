@@ -1,5 +1,5 @@
 searchPackages = (search) ->
-  return if search.length < 4
+  return if search.length < 3
   cnx = DDP.connect('https://atmospherejs.com')
   AtmoPackages = new Mongo.Collection 'packages', connection: cnx
   AtmoVersions = new Mongo.Collection 'versions', connection: cnx
@@ -14,7 +14,7 @@ searchPackages = (search) ->
 Meteor.publish 'latest', (search) ->
   check search, Match.OneOf null, undefined, String
   query = latestVersion: $exists: true
-  if search?
+  if search? and search isnt ''
     searchPackages search
     query = _.extend query, name:
       $regex: ".*#{search}.*"
