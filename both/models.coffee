@@ -1,3 +1,5 @@
+sortNumber = (a,b) -> a - b
+
 UpdateStatus =
   upToDate: 100
   outdatedPatch: 20
@@ -62,7 +64,7 @@ class @Pkg extends DocumentClass.Base
           return UpdateStatus.outdatedPatch
         else
           return UpdateStatus.upToDate
-      highestStatus = status.sort()[0]
+      highestStatus = status.sort(sortNumber).reverse()[0]
       return highestStatus unless highestStatus is UpdateStatus.upToDate
 
     currentVersion = @currentVersion()
@@ -73,7 +75,7 @@ class @Pkg extends DocumentClass.Base
       continue unless Pkg.filterDeps(name)
       pkg = Pkg.getByName name
       status.push pkg.getUpdateStatus dep.constraint, checked
-    return status.sort()[0] or UpdateStatus.upToDate
+    return status.sort(sortNumber)[0] or UpdateStatus.upToDate
 
   status: ->
     return {text: 'package not found', color: 'red'} unless @lastUpdated?
