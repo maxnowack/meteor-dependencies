@@ -1,2 +1,4 @@
 Template.Index.onCreated ->
-  @subscribe 'latest'
+  @searchValue = new ReactiveVar()
+  @autorun =>
+    @subscribe 'latest', @searchValue.get()
