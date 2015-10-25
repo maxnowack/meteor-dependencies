@@ -5,11 +5,12 @@ Meteor.publish 'package', (name) ->
   pkg = Pkg.getByName name
   currentVersion = pkg.currentVersion()
 
-  names = (packageName for packageName of currentVersion?.metadata?.dependencies)
+  names = (dep.packageName for dep in currentVersion?.dependencies)
   names = _.filter names, Pkg.filterDeps
   names.push name
 
   [
-    Packages.find(name: $in: names),
-    Versions.find(_id: currentVersion._id)
+    MeteorPackages.Packages.find(name: $in: names),
+    MeteorPackages.LatestPackages.find(packageName: $in: names),
+    MeteorPackages.Versions.find(packageName: $in: names)
   ]

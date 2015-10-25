@@ -1,4 +1,4 @@
 Template.Index.helpers
   latest: ->
-    Packages.find {},
-      sort: 'latestVersion.published': -1
+    MeteorPackages.Packages.find {},
+      sort: 'lastUpdated': -1

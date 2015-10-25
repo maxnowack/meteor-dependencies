@@ -6,49 +6,22 @@ UpdateStatus =
   outdatedMinor: 10
   outdatedMajor: 0
 
-@Packages = new Mongo.Collection 'packages'
-@Versions = new Mongo.Collection 'versions'
-
 class @Pkg extends DocumentClass.Base
-  @isTransformOf Packages
+  @isTransformOf MeteorPackages.Packages
 
   @getByName: (name) ->
-    pkg = Packages.findOne name: name
-    unless pkg?
-      Packages.insert name: name
-      pkg = Packages.findOne name: name
-      syncUpdate = Meteor.wrapAsync pkg.updateAtmo, pkg
-      return syncUpdate()
-    return pkg
+    MeteorPackages.Packages.findOne name: name
 
   @filterDeps: (name) ->
     name.indexOf(':') > -1
 
-  updateAtmo: (options = {}) ->
-    callback = options if typeof options is 'function'
-    connection = options.connection or DDP.connect('https://atmospherejs.com')
-    packages = options.packages or new Mongo.Collection 'packages', connection: connection
-    versions = options.versions or new Mongo.Collection 'versions', connection: connection
-
-    sub = connection.subscribe 'package', @name, =>
-      pkg = packages.findOne name: @name
-      return unless pkg
-      delete pkg._id
-      Packages.upsert @_id, pkg
-      versions.find(packageName: @name).forEach (version) ->
-        Versions.upsert version._id, version
-      sub.stop()
-      if callback then callback null, Packages.findOne @_id
-
   currentVersion: ->
-    Versions.findOne
+    latest = MeteorPackages.LatestPackages.findOne {packageName: @name}, sort: lastUpdated: -1
+    MeteorPackages.Versions.findOne
       packageName: @name
-      version: @latestVersion?.version
+      version: latest?.version
 
   getUpdateStatus: (constraint, checked = []) ->
-    unless @latestVersion?
-      syncUpdate = Meteor.wrapAsync @updateAtmo, this
-      syncUpdate()
     if constraint?
       diff = @diffConstraint constraint
       return diff unless diff is UpdateStatus.upToDate
@@ -56,10 +29,11 @@ class @Pkg extends DocumentClass.Base
     currentVersion = @currentVersion()
     checked.push @name
     status = []
-    for name, dep of currentVersion?.metadata?.dependencies
-      continue if name in checked
-      continue unless Pkg.filterDeps(name)
-      pkg = Pkg.getByName name
+    for dep in currentVersion?.dependencies
+      continue if dep.packageName in checked
+      continue unless Pkg.filterDeps(dep.packageName)
+      pkg = Pkg.getByName dep.packageName
+      continue unless pkg?
       status.push pkg.getUpdateStatus dep.constraint, checked
     return status.sort(sortNumber)[0] or UpdateStatus.upToDate
 
@@ -68,7 +42,8 @@ class @Pkg extends DocumentClass.Base
     alternatives = versionConstraint.alternatives
     versions = alternatives.map (version) -> version.versionString
     status = versions.map (version) =>
-      myVersion = PackageVersion.parse @latestVersion.version
+      return unless currentVersion = @currentVersion()
+      myVersion = PackageVersion.parse currentVersion.version
       version = PackageVersion.parse version
       if myVersion.major isnt version.major
         return UpdateStatus.outdatedMajor
@@ -104,9 +79,10 @@ class @Pkg extends DocumentClass.Base
 
   dependencies: ->
     currentVersion = @currentVersion()
-    names = (name for name of currentVersion?.metadata?.dependencies)
+    return unless currentVersion?
+    names = (dep.packageName for dep in currentVersion?.dependencies)
     names = _.filter names, Pkg.filterDeps
-    Packages.find(name: $in: names)
+    MeteorPackages.Packages.find(name: $in: names)
 
   getDepVersion: (name) ->
-    @currentVersion()?.metadata?.dependencies[name]
+    _.find @currentVersion()?.dependencies, (dep) -> dep.packageName is name

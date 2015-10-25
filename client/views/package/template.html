@@ -1,9 +1,9 @@
 <template name="Package">
-  <h1 class="ui header">{{package.name}} ({{package.latestVersion.version}})</h1>
+  <h1 class="ui header"><a href="">{{package.name}}</a> ({{package.currentVersion.version}})</h1>
   <div class="package-data">
     <img src="/{{package.name}}.svg" />
     <p>
-      Last update: {{formatLocalized package.latestVersion.published}}
+      Last update: {{formatLocalized package.lastUpdated}}
     </p>
   </div>
 
@@ -31,10 +31,10 @@
             </td>
             <td>
               <div class="ui label">
-                {{latestVersion.version}}
+                {{currentVersion.version}}
               </div>
             </td>
-            <td>{{formatLocalized latestVersion.published}}</td>
+            <td>{{formatLocalized lastUpdated}}</td>
           </tr>
         {{/each}}
       </tbody>

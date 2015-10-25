@@ -24,10 +24,10 @@
             <td><a href="{{pathFor 'package' pkgname=name}}">{{name}}</a> <img src="/{{name}}.svg" /></td>
             <td>
               <div class="ui label">
-                {{latestVersion.version}}
+                {{currentVersion.version}}
               </div>
             </td>
-            <td>{{formatLocalized latestVersion.published}}</td>
+            <td>{{formatLocalized lastUpdated}}</td>
           </tr>
         {{/each}}
       </tbody>

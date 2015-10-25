@@ -1,3 +1,3 @@
 Template.Package.helpers
   package: ->
-    Packages.findOne name: Router.current().getParams().pkgname
+    MeteorPackages.Packages.findOne name: Router.current().getParams().pkgname
